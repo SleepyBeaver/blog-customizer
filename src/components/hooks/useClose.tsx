@@ -10,9 +10,9 @@ export function useClose({ isOpen, onClose, rootRef }: useCloseProps) {
 	const eventClickOutside = useCallback(
 		(event: MouseEvent) => {
 			if (
-				event instanceof Node &&
+				event.target instanceof Node &&
 				rootRef.current &&
-				!rootRef.current.contains(event)
+				!rootRef.current.contains(event.target)
 			) {
 				onClose();
 			}

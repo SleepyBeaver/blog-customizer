@@ -23,14 +23,26 @@ import styles from './ArticleParamsForm.module.scss';
 import { useClose } from '../hooks/useClose';
 
 type ArticleParamsFormProps = {
-	onApply: (state: ArticleStateType) => void;
+	setArticleState: React.Dispatch<React.SetStateAction<ArticleStateType>>;
 };
 
-export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
-	const ref = useRef<HTMLFormElement | null>(null);
+export const ArticleParamsForm = ({
+	setArticleState,
+}: ArticleParamsFormProps) => {
+	const formRef = useRef<HTMLFormElement | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [paramsFormState, setParamsFormState] =
 		useState<ArticleStateType>(defaultArticleState);
+
+	useClose({
+		isOpen: isOpen,
+		onClose: () => setIsOpen(false),
+		rootRef: formRef,
+	});
+
+	const toggleIsOpen = () => {
+		setIsOpen((prevIsOpen) => !prevIsOpen);
+	};
 
 	const handleChange = (field: keyof ArticleStateType) => {
 		return (value: OptionType) => {
@@ -39,23 +51,13 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 	};
 
 	const resetParamsFormState = () => {
-		onApply(defaultArticleState);
+		setArticleState(defaultArticleState);
 		setParamsFormState(defaultArticleState);
 	};
 
 	const applyParamsFormState = (event: FormEvent) => {
 		event.preventDefault();
-		onApply(paramsFormState);
-	};
-
-	useClose({
-		isOpen: isOpen,
-		onClose: () => setIsOpen(false),
-		rootRef: ref,
-	});
-
-	const toggleIsOpen = () => {
-		setIsOpen((prevIsOpen) => !prevIsOpen);
+		setArticleState(paramsFormState);
 	};
 
 	return (
@@ -65,6 +67,7 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form
 					className={styles.form}
+					ref={formRef}
 					onSubmit={applyParamsFormState}
 					onReset={resetParamsFormState}>
 					<Text size={31} weight={800} uppercase as={'h2'}>
